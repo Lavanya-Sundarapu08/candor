@@ -1,0 +1,107 @@
+:root {
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  --font-body: 'IBM Plex Sans', system-ui, sans-serif;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+
+  --sidebar-width: 250px;
+}
+
+/* Dark theme: black background, green as the primary brand color.
+   Blue and red are reserved for specific analytics/risk indicators, not
+   the primary UI color - matching the explicit color spec. */
+:root,
+:root[data-theme='dark'] {
+  --color-bg: #0a0d0a;
+  --color-surface: #12160f;
+  --color-surface-raised: #1a201a;
+  --color-border: #263026;
+  --color-text: #e7f0e5;
+  --color-text-muted: #8a9a87;
+
+  --color-accent: #22c55e;       /* primary brand green - nav active, buttons, links */
+  --color-accent-dim: #143321;
+  --color-accent-strong: #16a34a;
+
+  --color-add: #3fb950;          /* git-diff style data green - substantive */
+  --color-add-dim: #14311e;
+  --color-del: #f85149;          /* git-diff style data red - superficial/critical */
+  --color-del-dim: #3a1c1a;
+  --color-warn: #d29922;         /* amber - follow-up fix signal */
+  --color-info: #5b8dc9;         /* blue - informational badges/links, not primary */
+  --color-info-dim: #1c2b3d;
+
+  --shadow-card: none;
+}
+
+/* Light theme: white background, same green as the primary brand color. */
+:root[data-theme='light'] {
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f2f7f1;
+  --color-border: #dce6da;
+  --color-text: #16221a;
+  --color-text-muted: #5b6b58;
+
+  --color-accent: #16a34a;
+  --color-accent-dim: #dcf5e3;
+  --color-accent-strong: #15803d;
+
+  --color-add: #1a7f37;
+  --color-add-dim: #ddf4e2;
+  --color-del: #cf222e;
+  --color-del-dim: #ffebe9;
+  --color-warn: #9a6700;
+  --color-info: #3568a0;
+  --color-info-dim: #dce8f2;
+
+  --shadow-card: 0 1px 3px rgba(22, 34, 26, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+::selection {
+  background: var(--color-accent-dim);
+  color: var(--color-accent);
+}
+
+a {
+  color: var(--color-info);
+}
+
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
