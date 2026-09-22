@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ShieldAlert } from 'lucide-react'
+import { ShieldAlert, Send } from 'lucide-react'
 import type { PullRequestAnalysis } from '../api/types'
 import StatusBadge from './StatusBadge'
 
@@ -23,6 +23,7 @@ interface Props {
 
 export default function RiskSignalsPage({ pullRequests }: Props) {
   const [filter, setFilter] = useState<'ALL' | Severity>('ALL')
+  const [activeAlertPr, setActiveAlertPr] = useState<PullRequestAnalysis | null>(null)
 
   const flagged = pullRequests.filter((pr) => pr.hadFollowUpFix)
   const shown = filter === 'ALL' ? flagged : flagged.filter((pr) => severityOf(pr) === filter)
@@ -69,9 +70,41 @@ export default function RiskSignalsPage({ pullRequests }: Props) {
                   {pr.followUpFixes.length} related follow-up {pr.followUpFixes.length === 1 ? 'fix' : 'fixes'} ·{' '}
                   first {pr.followUpFixes[0]?.timeAfterMerge}
                 </div>
+                <div>
+                  <button className="btn-alert-slack" onClick={() => setActiveAlertPr(pr)}>
+                    <Send size={12} /> Dispatch Slack / Webhook Alert
+                  </button>
+                </div>
               </div>
             )
           })}
+        </div>
+      )}
+
+      {activeAlertPr && (
+        <div className="slack-modal-overlay" onClick={() => setActiveAlertPr(null)}>
+          <div className="slack-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="slack-modal-header">
+              <div className="slack-modal-title">
+                <Send size={15} /> Webhook Dispatch Simulator
+              </div>
+              <span className="slack-status-badge">HTTP 200 OK</span>
+            </div>
+            <div className="slack-preview-bubble">
+              <div className="slack-channel-tag">#engineering-quality-alerts &bull; incoming-webhook</div>
+              <strong>🚨 High-Risk Code Review Alert: PR #{activeAlertPr.prNumber}</strong>
+              <p style={{ margin: '6px 0', fontWeight: 500 }}>{activeAlertPr.title}</p>
+              <div style={{ fontSize: '12px', color: '#64748b' }}>
+                Author: <strong>{activeAlertPr.author}</strong> &bull; Review Substance: <strong>{activeAlertPr.reviewType}</strong>
+              </div>
+              <div style={{ marginTop: '8px', fontSize: '12px', background: '#ffffff', padding: '8px 10px', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
+                ⚠️ <strong>{activeAlertPr.followUpFixes.length} related follow-up bug fix(es)</strong> detected on overlapping modified files within 14 days of merge.
+              </div>
+            </div>
+            <div className="slack-modal-footer">
+              <button className="btn-run" onClick={() => setActiveAlertPr(null)}>Close Simulation</button>
+            </div>
+          </div>
         </div>
       )}
     </div>

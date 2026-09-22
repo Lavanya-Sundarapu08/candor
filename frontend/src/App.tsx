@@ -15,7 +15,7 @@ import ReviewerLeaderboard from './components/ReviewerLeaderboard'
 import AnalyticsSection from './components/AnalyticsSection'
 import TrendChart from './components/TrendChart'
 import HistoryPage from './components/HistoryPage'
-import { submitAnalysisJob, getJobStatus } from './api/candorApi'
+import { submitAnalysisJob, getJobStatus, analyzeRepo } from './api/candorApi'
 import type { AnalysisResponse } from './api/types'
 import './styles/tokens.css'
 import './styles/app.css'
@@ -80,9 +80,16 @@ export default function App() {
       const { jobId } = await submitAnalysisJob({ owner, repo, token: token || undefined, limit }, authToken)
       await pollJobUntilDone(jobId, authToken)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Something went wrong.')
-      setResult(null)
-      setLoading(false)
+      console.warn('Async pipeline call failed, falling back to direct analysis:', err)
+      try {
+        const fallbackResult = await analyzeRepo({ owner, repo, token: token || undefined, limit }, authToken)
+        setResult(fallbackResult)
+        setLoading(false)
+      } catch (fallbackErr) {
+        setError(fallbackErr instanceof Error ? fallbackErr.message : 'Something went wrong.')
+        setResult(null)
+        setLoading(false)
+      }
     }
   }
 
@@ -120,10 +127,14 @@ export default function App() {
       <div className="main-column">
         <div className="top-bar">
           <div className="top-bar-brand">
-            <Activity size={15} /> Candor Intelligence Suite
+            <span className="top-bar-repo">{owner}/{repo}</span>
+            <span className="top-bar-separator">/</span>
+            <span className="top-bar-page">{PAGE_TITLES[page]}</span>
           </div>
           <div className="top-bar-status">
-            <ShieldCheck size={14} /> Explainable Rule Engine &bull; Active
+            <span className="system-status-pill">
+              <span className="status-dot"></span> System Online
+            </span>
             <ThemeToggle />
           </div>
         </div>

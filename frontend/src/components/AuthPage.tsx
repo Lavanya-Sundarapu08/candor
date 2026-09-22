@@ -36,8 +36,8 @@ export default function AuthPage({ onAuthenticated }: Props) {
         <div className="auth-brand">
           <div className="brand-avatar">C</div>
           <div>
-            <div className="brand-name">CANDOR <span className="brand-version">v2.0</span></div>
-            <div className="brand-subtitle">CODE QUALITY &amp; RISK</div>
+            <div className="brand-name">Candor</div>
+            <div className="brand-subtitle">Code Review Intelligence</div>
           </div>
         </div>
 
@@ -68,7 +68,7 @@ export default function AuthPage({ onAuthenticated }: Props) {
         </form>
 
         <div className="auth-footnote">
-          <ShieldCheck size={13} /> Your Candor account is separate from your GitHub token, set later in "GitHub PAT Setup".
+          <ShieldCheck size={14} /> Sign in to access your code review quality dashboard.
         </div>
       </div>
     </div>

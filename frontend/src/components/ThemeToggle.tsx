@@ -3,9 +3,9 @@ import { useEffect, useState } from 'react'
 type Theme = 'dark' | 'light'
 
 function getInitialTheme(): Theme {
-  const stored = window.localStorage.getItem('candor-theme')
-  if (stored === 'dark' || stored === 'light') return stored
-  return 'dark'
+  const stored = window.localStorage.getItem('candor-theme-v2')
+  if (stored === 'light' || stored === 'dark') return stored
+  return 'light'
 }
 
 export default function ThemeToggle() {
@@ -13,7 +13,7 @@ export default function ThemeToggle() {
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
-    window.localStorage.setItem('candor-theme', theme)
+    window.localStorage.setItem('candor-theme-v2', theme)
   }, [theme])
 
   return (

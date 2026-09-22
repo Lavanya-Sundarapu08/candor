@@ -22,10 +22,26 @@ export default function DashboardPage({ owner, repo, limit, onLimitChange, loadi
     ? Math.round((summary.substantiveCount / summary.reviewedCount) * 100)
     : 0
 
+  const healthScore = summary && summary.reviewedCount > 0
+    ? Math.max(0, Math.min(100, Math.round(
+        (summary.substantiveCount / summary.reviewedCount) * 100 - (summary.riskyApprovalCount * 12)
+      )))
+    : null
+
+  const healthGrade = healthScore === null
+    ? { grade: '—', label: 'Pending Analysis', desc: 'Execute an analysis to calculate repo review health index', badgeClass: 'grade-muted' }
+    : healthScore >= 85
+    ? { grade: 'A', label: 'Healthy Peer Review Culture', desc: 'High substantive feedback with minimal post-merge defect correlation', badgeClass: 'grade-a' }
+    : healthScore >= 70
+    ? { grade: 'B', label: 'Acceptable Review Standards', desc: 'Solid technical discourse with occasional superficial approvals', badgeClass: 'grade-b' }
+    : healthScore >= 50
+    ? { grade: 'C', label: 'Elevated Review Risk', desc: 'High frequency of superficial approvals correlating with post-merge fixes', badgeClass: 'grade-c' }
+    : { grade: 'F', label: 'Critical Review Deficit', desc: 'Substantial rubber-stamping correlating with immediate post-merge bug fixes', badgeClass: 'grade-f' }
+
   if (!owner || !repo) {
     return (
       <div className="page-header">
-        <h1>Repository Analysis Center</h1>
+        <h1>Code Review Audit Dashboard</h1>
         <div className="empty-panel">
           <p>No repository selected yet.</p>
           <p className="empty-panel-sub">Go to "Select Repository" to connect one first.</p>
@@ -38,7 +54,7 @@ export default function DashboardPage({ owner, repo, limit, onLimitChange, loadi
     <div className="page-header">
       <div className="dashboard-top-row">
         <div>
-          <div className="page-eyebrow">Repository Analysis Center</div>
+          <div className="page-eyebrow">Code Review Audit Dashboard</div>
           <h1>{owner}/{repo}</h1>
           <p className="page-subtitle-inline">
             {summary ? `${summary.totalAnalyzed} PRs analyzed` : 'Not yet analyzed'}
@@ -59,6 +75,30 @@ export default function DashboardPage({ owner, repo, limit, onLimitChange, loadi
       </div>
 
       {error && <div className="error-banner">Error: {error}</div>}
+
+      {summary && (
+        <div className="health-grade-card">
+          <div className={`health-grade-badge ${healthGrade.badgeClass}`}>
+            <span className="health-grade-letter">{healthGrade.grade}</span>
+            <span className="health-grade-score">{healthScore !== null ? `${healthScore}/100` : 'N/A'}</span>
+          </div>
+          <div className="health-grade-info">
+            <div className="health-grade-title">
+              Code Review Health Grade: <strong>{healthGrade.grade}</strong> ({healthScore}/100)
+            </div>
+            <div className="health-grade-desc">
+              {healthGrade.label} &bull; {healthGrade.desc}
+            </div>
+            <div className="health-grade-tags">
+              <span className="health-tag success">✓ {summary.substantiveCount} Substantive Reviews</span>
+              <span className="health-tag neutral">○ {summary.superficialCount} Superficial</span>
+              <span className={`health-tag ${summary.riskyApprovalCount > 0 ? 'danger' : 'success'}`}>
+                {summary.riskyApprovalCount > 0 ? `⚠ ${summary.riskyApprovalCount} Risky Approvals Flagged` : '✓ 0 Risky Approvals'}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="kpi-grid">
         <KpiCard icon={<GitPullRequest size={18} />} label="PRs Imported" value={summary?.totalAnalyzed ?? 0} sub="Analyzed from GitHub" color="accent" />

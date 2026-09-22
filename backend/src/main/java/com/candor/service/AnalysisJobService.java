@@ -36,6 +36,9 @@ public class AnalysisJobService {
     private final ObjectMapper objectMapper;
     private final String topicName;
 
+    @Value("${spring.kafka.listener.auto-startup:true}")
+    private boolean kafkaListenerActive;
+
     public AnalysisJobService(AnalysisJobRepository jobRepository, AnalysisService analysisService,
                                KafkaTemplate<String, Object> kafkaTemplate, ObjectMapper objectMapper,
                                @Value("${candor.kafka.analyze-topic}") String topicName) {
@@ -60,7 +63,18 @@ public class AnalysisJobService {
 
         AnalyzeJobRequestedEvent event = new AnalyzeJobRequestedEvent(
                 jobId, username, request.getOwner(), request.getRepo(), request.getToken(), request.getLimit());
-        kafkaTemplate.send(topicName, jobId, event);
+
+        if (kafkaListenerActive) {
+            try {
+                kafkaTemplate.send(topicName, jobId, event);
+            } catch (Exception ex) {
+                log.warn("Kafka send failed ({}), processing job asynchronously in background", ex.getMessage());
+                java.util.concurrent.CompletableFuture.runAsync(() -> handleAnalyzeRequested(event));
+            }
+        } else {
+            log.info("Kafka listener disabled locally, running job {} in background executor", jobId);
+            java.util.concurrent.CompletableFuture.runAsync(() -> handleAnalyzeRequested(event));
+        }
 
         return jobId;
     }

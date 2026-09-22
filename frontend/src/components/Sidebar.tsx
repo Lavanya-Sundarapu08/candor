@@ -13,19 +13,19 @@ interface NavItem {
 }
 
 const TOP_ITEMS: NavItem[] = [
-  { page: 'select-repo', label: 'Select Repository', icon: <FolderGit2 size={17} /> },
-  { page: 'github-pat', label: 'GitHub PAT Setup', icon: <KeyRound size={17} /> }
+  { page: 'select-repo', label: 'Connect Repository', icon: <FolderGit2 size={17} /> },
+  { page: 'github-pat', label: 'VCS Token Configuration', icon: <KeyRound size={17} /> }
 ]
 
 const INTEL_ITEMS: NavItem[] = [
   { page: 'dashboard', label: 'Dashboard', icon: <LayoutGrid size={17} /> },
   { page: 'pull-requests', label: 'Pull Requests', icon: <GitPullRequest size={17} /> },
   { page: 'risk-signals', label: 'Risk Signals', icon: <ShieldAlert size={17} /> },
-  { page: '2d-risk-matrix', label: '2D Risk Matrix', icon: <Grid3x3 size={17} />, badge: 'NEW' },
-  { page: 'rules-playground', label: 'Rules Playground', icon: <SlidersHorizontal size={17} />, badge: 'SOON' },
+  { page: '2d-risk-matrix', label: '2D Risk Matrix', icon: <Grid3x3 size={17} /> },
+  { page: 'rules-playground', label: 'Rule Simulator Lab', icon: <SlidersHorizontal size={17} /> },
   { page: 'reviewer-roster', label: 'Reviewer Roster', icon: <Users size={17} /> },
   { page: 'quality-analytics', label: 'Quality Analytics', icon: <BarChart3 size={17} /> },
-  { page: 'sprint-audit-report', label: 'Sprint Audit Report', icon: <FileText size={17} />, badge: 'SOON' },
+  { page: 'sprint-audit-report', label: 'Sprint Audit Report', icon: <FileText size={17} /> },
   { page: 'analysis-runs', label: 'Analysis Runs', icon: <History size={17} /> }
 ]
 
@@ -43,10 +43,8 @@ export default function Sidebar({ current, onNavigate, username, onLogout }: Pro
       <div className="sidebar-brand">
         <div className="brand-avatar">C</div>
         <div className="brand-text">
-          <div className="brand-name">
-            CANDOR <span className="brand-version">v2.0</span>
-          </div>
-          <div className="brand-subtitle">CODE QUALITY &amp; RISK</div>
+          <div className="brand-name">Candor</div>
+          <div className="brand-subtitle">Code Review Intelligence</div>
         </div>
       </div>
 
@@ -55,7 +53,7 @@ export default function Sidebar({ current, onNavigate, username, onLogout }: Pro
           <NavButton key={item.page} item={item} active={current === item.page} onClick={() => onNavigate(item.page)} />
         ))}
 
-        <div className="sidebar-section-label">Repository Intelligence</div>
+        <div className="sidebar-section-label">Analytics &amp; Audit</div>
 
         {INTEL_ITEMS.map((item) => (
           <NavButton key={item.page} item={item} active={current === item.page} onClick={() => onNavigate(item.page)} />

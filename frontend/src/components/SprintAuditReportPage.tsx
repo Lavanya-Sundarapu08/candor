@@ -95,6 +95,30 @@ export default function SprintAuditReportPage({ result, owner, repo }: Props) {
     URL.revokeObjectURL(url)
   }
 
+  function handleDownloadCsv() {
+    if (!result || !result.pullRequests.length) return
+    const headers = ['PR Number', 'Title', 'Author', 'Merged At', 'Review Type', 'Review Snippet', 'Had Follow-Up Fix', 'Follow-Up Fixes Count', 'Files Changed']
+    const rows = result.pullRequests.map(pr => [
+      pr.prNumber,
+      `"${pr.title.replace(/"/g, '""')}"`,
+      `"${pr.author}"`,
+      `"${pr.mergedAt}"`,
+      pr.reviewType,
+      `"${(pr.reviewSnippet || '').replace(/"/g, '""')}"`,
+      pr.hadFollowUpFix ? 'YES' : 'NO',
+      pr.followUpFixes.length,
+      pr.filesChanged.length
+    ])
+    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n')
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `candor-audit-${owner}-${repo}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="page-header">
       <div className="dashboard-top-row">
@@ -104,6 +128,9 @@ export default function SprintAuditReportPage({ result, owner, repo }: Props) {
           <p className="page-subtitle-inline">Export a markdown report for sprint retrospectives and team health audits.</p>
         </div>
         <div className="dashboard-controls">
+          <button className="btn-secondary" onClick={handleDownloadCsv} disabled={!result || !result.pullRequests.length} title="Download CSV for Excel">
+            <Download size={14} /> Download .csv Data
+          </button>
           <button className="btn-secondary" onClick={handleCopy}>
             {copied ? <Check size={14} /> : <Copy size={14} />} {copied ? 'Copied' : 'Copy Markdown'}
           </button>
