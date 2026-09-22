@@ -1,6 +1,7 @@
 import type { AnalysisResponse, AnalyzeRequest, HistoryEntry } from './types'
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api'
+const rawBase = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080/api').trim().replace(/\/$/, '')
+const BASE_URL = rawBase.endsWith('/api') ? rawBase : `${rawBase}/api`
 
 export interface AuthResponse {
   token: string
