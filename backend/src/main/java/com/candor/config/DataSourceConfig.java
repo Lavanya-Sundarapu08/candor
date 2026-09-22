@@ -53,9 +53,29 @@ public class DataSourceConfig {
                 log.warn("Failed to parse PostgreSQL URI, prefixing jdbc: directly", e);
                 jdbcUrl = "jdbc:" + jdbcUrl;
             }
+        } else if (jdbcUrl.startsWith("jdbc:postgresql://") && jdbcUrl.contains("@")) {
+            // If someone wrote jdbc:postgresql://user:pass@host...
+            try {
+                URI uri = URI.create(jdbcUrl.substring(5));
+                String userInfo = uri.getUserInfo();
+                if (userInfo != null && userInfo.contains(":")) {
+                    String[] parts = userInfo.split(":", 2);
+                    username = parts[0];
+                    password = parts[1];
+                }
+                String host = uri.getHost();
+                int port = uri.getPort() > 0 ? uri.getPort() : 5432;
+                String path = (uri.getPath() != null && !uri.getPath().isBlank()) ? uri.getPath() : "/neondb";
+                jdbcUrl = "jdbc:postgresql://" + host + ":" + port + path + "?sslmode=require";
+            } catch (Exception ignored) {}
         } else if (!jdbcUrl.startsWith("jdbc:")) {
             jdbcUrl = "jdbc:" + jdbcUrl;
         }
+
+        // Clean up problematic parameters if present
+        jdbcUrl = jdbcUrl.replace("&channel_binding=require", "")
+                         .replace("channel_binding=require&", "")
+                         .replace("channel_binding=require", "");
 
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl(jdbcUrl);
