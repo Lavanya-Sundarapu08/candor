@@ -1,5 +1,7 @@
 # Candor — Code Review Honesty Tracker
 
+[![Candor CI/CD](https://github.com/Lavanya-Sundarapu08/candor/actions/workflows/ci-cd.yml/badge.svg?branch=main)](https://github.com/Lavanya-Sundarapu08/candor/actions/workflows/ci-cd.yml)
+
 An "LGTM" approval comment is treated as proof a pull request was reviewed carefully — but it
 often isn't. Candor pulls a repository's merged pull requests from GitHub, classifies each
 review comment as **substantive** or **superficial**, and checks whether the same files showed
