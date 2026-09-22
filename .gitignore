@@ -3,10 +3,29 @@ backend/target/
 backend/data/
 *.class
 
+# Backend secrets
+backend/.env
+backend/.env.*
+!backend/.env.example
+
 # Frontend
 frontend/node_modules/
 frontend/dist/
 frontend/.vite/
+
+# Frontend secrets
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# General secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
 
 # General
 .DS_Store
